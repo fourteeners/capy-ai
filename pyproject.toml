@@ -1,0 +1,111 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capy-bughunter"
+version = "0.2.0"
+description = "CAPY Bug Hunter — Multi-Agent Autonomous Bug Bounty System for Web2/Web3"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "CAPY AI", email = "security@capy.ai"},
+]
+keywords = [
+    "bug-bounty", "security", "vulnerability-scanner", "pentesting",
+    "multi-agent", "ai-agent", "web3-security", "smart-contract-audit",
+    "reconnaissance", "exploit-development", "hermes-agent",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Testing",
+]
+
+dependencies = [
+    "hermes-agent>=0.14.0",
+    "requests>=2.31",
+    "urllib3>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "mypy>=1.8",
+    "ruff>=0.5",
+    "black>=24.0",
+]
+web3 = [
+    "slither-analyzer>=0.10",
+    "mythril>=0.24",
+    "web3>=6.0",
+    "eth-abi>=5.0",
+]
+mcp = [
+    "mcp>=1.0",
+    "fastapi>=0.110",
+]
+all = [
+    "capy-bughunter[dev,web3,mcp]",
+]
+
+[project.scripts]
+capy-hunt = "hermes.cli:main"
+capy-recon = "hermes.tools.recon.cli:main"
+
+[project.urls]
+Repository = "https://github.com/fourteeners/capy-ai"
+Documentation = "https://github.com/fourteeners/capy-ai/blob/main/docs/ARCHITECTURE.md"
+Issues = "https://github.com/fourteeners/capy-ai/issues"
+
+[tool.setuptools]
+packages = [
+    "hermes",
+    "hermes.tools",
+    "hermes.tools.recon",
+    "hermes.tools.analysis",
+    "hermes.tools.exploitation",
+    "hermes.tools.web3",
+    "hermes.tools.reporting",
+    "hermes.tools.utility",
+    "hermes.tools.mcp",
+    "hermes.kb",
+    "scope_guard",
+    "kill_switch",
+    "audit_log",
+    "caveman",
+]
+
+[tool.setuptools.package-dir]
+"hermes" = "hermes"
+"scope_guard" = "scope_guard"
+"kill_switch" = "kill_switch"
+"audit_log" = "audit_log"
+"caveman" = "caveman"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = ["-v", "--tb=short"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true

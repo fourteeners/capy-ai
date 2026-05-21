@@ -1,0 +1,64 @@
+name: PR Checks
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate agents.yml syntax
+        run: python3 -c "import yaml; yaml.safe_load(open('hermes/config/agents.yml'))"
+
+      - name: Validate docker-compose
+        run: |
+          python3 -c "
+          import yaml
+          data = yaml.safe_load(open('docker/docker-compose.yml'))
+          services = data.get('services', {})
+          assert 'hermes' in services, 'hermes service missing'
+          assert 'open-webui' in services, 'open-webui service missing'
+          print(f'OK: {len(services)} services defined')
+          "
+
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Run integration tests
+        run: python3 -m unittest tests.test_integration -v
+
+  scope-guard-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify scope guard tests
+        run: |
+          python3 -c "
+          import sys; sys.path.insert(0, '.')
+          from scope_guard.engine import ScopeGuard
+          g = ScopeGuard()
+          g.load_program({
+              'program': 'test',
+              'in_scope': {'domains': ['*.test.com'], 'exclude': ['docs.test.com']},
+              'test_types': {'allowed': ['recon'], 'restricted': ['dos'], 'approval_required': ['exploit']},
+              'rate_limits': {'requests_per_second': 5},
+          })
+          assert g.check('https://app.test.com', 'recon')['passed']
+          assert not g.check('https://docs.test.com', 'recon')['passed']
+          assert not g.check('https://evil.com', 'recon')['passed']
+          print('Scope-Guard audit: PASSED')
+          "

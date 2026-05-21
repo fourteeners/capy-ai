@@ -1,0 +1,20 @@
+# Gitleaks config — exclude test data and sample reports
+[allowlist]
+description = "Allowlist for test fixtures and sample data"
+
+[[rules]]
+id = "generic-api-key"
+[rules.allowlist]
+paths = [
+    '''corpus/.*\.json$''',
+    '''tests/.*\.py$''',
+    '''caveman/profiles/.*\.md$''',
+]
+
+[[rules]]
+id = "aws-access-key"
+[rules.allowlist]
+paths = [
+    '''tests/.*\.py$''',
+    '''hermes/tools/recon/secret_scanner.py''',
+]
