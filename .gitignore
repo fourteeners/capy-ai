@@ -1,0 +1,47 @@
+# Environment
+.env
+*.env.local
+*.env.production
+
+# Hermes runtime
+hermes/profiles/
+hermes/memory/
+hermes/experiences/
+
+# Audit logs (runtime generated)
+audit-log/sessions/*.jsonl
+audit-log/findings/*.jsonl
+audit-log/actions/*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Docker
+docker/_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.key
+*.pem
+credentials.json
+
+# Corpus (large datasets — committed separately)
+corpus/bug-reports/hackerone/*.json
+corpus/bug-reports/immunefi/*.json
+corpus/cve-db/*.json
+
+# Keep directory structure
+!**/.gitkeep

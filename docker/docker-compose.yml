@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  # ============================================================
+  # Hermes Agent — Multi-Agent Bug Bounty Fleet
+  # ============================================================
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: capy-hermes
+    restart: unless-stopped
+    environment:
+      # LLM Provider (set via .env or override here)
+      - HERMES_PROVIDER=${HERMES_PROVIDER:-anthropic}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      # Gateway
+      - API_SERVER_ENABLED=true
+      - API_SERVER_HOST=0.0.0.0
+    ports:
+      - "8642:8642"   # Default gateway
+      - "8643:8643"   # Athena (CEO/Orchestrator)
+      - "8644:8644"   # Prometheus (RnD)
+      - "8645:8645"   # Odysseus (Plan & Strategy)
+      - "8646:8646"   # Ares (Execution)
+    volumes:
+      - ../hermes/profiles:/home/hermes/.hermes/profiles:rw
+      - ../hermes/config:/home/hermes/.hermes/config:ro
+      - ../hermes/skills:/home/hermes/.hermes/skills:ro
+      - ../hermes/memory:/home/hermes/.hermes/memory:rw
+      - ../hermes/kb:/home/hermes/.hermes/kb:rw
+      - ../agents:/home/hermes/agents:ro
+      - ../audit-log:/home/hermes/audit-log:rw
+      - ../scope-guard:/home/hermes/scope-guard:ro
+      - ../kill-switch:/home/hermes/kill-switch:ro
+      - ../corpus:/home/hermes/corpus:ro
+      - hermes_data:/home/hermes/.hermes/data
+    networks:
+      - hermes-net
+    entrypoint: ["/bin/bash", "/home/hermes/.hermes/config/run_agents.sh"]
+
+  # ============================================================
+  # Open WebUI — Optional visual interface for agent management
+  # ============================================================
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: capy-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    environment:
+      - OPENAI_API_BASE_URLS=http://hermes:8642/v1;http://hermes:8643/v1;http://hermes:8644/v1;http://hermes:8645/v1;http://hermes:8646/v1
+      - OPENAI_API_KEYS=sk-default;sk-athena;sk-prometheus;sk-odysseus;sk-ares
+    volumes:
+      - open_webui_data:/app/backend/data
+    networks:
+      - hermes-net
+    depends_on:
+      - hermes
+
+volumes:
+  hermes_data:
+  open_webui_data:
+
+networks:
+  hermes-net:
+    driver: bridge

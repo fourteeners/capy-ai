@@ -1,0 +1,59 @@
+# ============================================================
+# CAPY BUG HUNTER — Agent Fleet Declaration
+# ============================================================
+# Each top-level key is a Hermes profile (agent identity).
+# Processed in dependency order: clone-from sources created first.
+
+athena:
+  active: true
+  clone-from: false
+  personality: orchestrator
+  description: "CEO & Orchestrator — Strategic oversight, task delegation, kill-switch authority"
+  env:
+    API_SERVER_PORT: 8643
+    API_SERVER_KEY: "sk-athena-bughunter-ceo-2025"
+    HERMES_PERSONALITY_FILE: "/home/hermes/agents/orchestrator/soul/SOUL.md"
+    HERMES_SKILLS_DIR: "/home/hermes/.hermes/skills/orchestrator"
+    CAVEMAN_LEVEL: "lite"
+    SCOPE_GUARD_ENABLED: "true"
+    KILL_SWITCH_AUTHORITY: "root"
+
+prometheus:
+  active: true
+  clone-from: athena
+  personality: rnd
+  description: "RnD Lead — Research, vulnerability intelligence, tool development, knowledge synthesis"
+  env:
+    API_SERVER_PORT: 8644
+    API_SERVER_KEY: "sk-prometheus-rnd-lead-2025"
+    HERMES_PERSONALITY_FILE: "/home/hermes/agents/rnd/soul/SOUL.md"
+    HERMES_SKILLS_DIR: "/home/hermes/.hermes/skills/rnd"
+    CAVEMAN_LEVEL: "full"
+    CORPUS_DIR: "/home/hermes/corpus"
+
+odysseus:
+  active: true
+  clone-from: athena
+  personality: plan-strategy
+  description: "Strategy Lead — Target profiling, attack planning, methodology optimization"
+  env:
+    API_SERVER_PORT: 8645
+    API_SERVER_KEY: "sk-odysseus-strategy-lead-2025"
+    HERMES_PERSONALITY_FILE: "/home/hermes/agents/plan-strategy/soul/SOUL.md"
+    HERMES_SKILLS_DIR: "/home/hermes/.hermes/skills/plan-strategy"
+    CAVEMAN_LEVEL: "full"
+
+ares:
+  active: true
+  clone-from: athena
+  personality: execution
+  description: "Execution Lead — Recon, vulnerability hunting, exploit development, validation"
+  env:
+    API_SERVER_PORT: 8646
+    API_SERVER_KEY: "sk-ares-execution-lead-2025"
+    HERMES_PERSONALITY_FILE: "/home/hermes/agents/execution/soul/SOUL.md"
+    HERMES_SKILLS_DIR: "/home/hermes/.hermes/skills/execution"
+    CAVEMAN_LEVEL: "ultra"
+    SCOPE_GUARD_STRICT: "true"
+    EXECUTION_MODE: "semi-auto"
+    APPROVAL_REQUIRED_FOR: "exploit_live,payload_delivery,data_exfiltration_test"
